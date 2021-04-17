@@ -1,0 +1,73 @@
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: gavanlamb/azure-devops-templates
+      endpoint: gavanlamb
+
+variables:
+  - name: notifyUsers
+    value: 'Gavan Lamb'
+    readonly: true
+  - name: serviceName
+    value: shared-resources
+    readonly: true
+
+stages:
+  - stage: Deploy_Sydney_Production
+    displayName: 'Deploy to Sydney Production'
+    variables:
+      - name: artifactName
+        value: shared-resources_production_ap-southeast-2
+        readonly: true
+      - name: stateBucketName
+        value: terraform-state-fkhj
+        readonly: true
+      - name: stateLockTableName
+        value: terraform-lock-fkhj
+        readonly: true
+      - name: serviceConnectionName
+        value: ap-southeast-2
+        readonly: true
+      - name: environment
+        value: production
+        readonly: true
+      - name: region
+        value: ap-southeast-2
+        readonly: true
+    jobs:
+      - job: Plan
+        steps:
+          - template: aws/terraform/plan.yml@templates
+            parameters:
+              artifactName: ${{ variables.artifactName }}
+              planAdditionalCommandOptions: '-var-file=variables/${{ variables.environment }}.${{ variables.region }}.tfvars'
+              serviceConnectionName: ${{ variables.serviceConnectionName }}
+              stateBucketName: ${{ variables.stateBucketName }}
+              stateLockTableName: ${{ variables.stateLockTableName }}
+              workspaceName: ${{ variables.serviceName}}_${{ variables.environment}}_${{ variables.region}}
+
+      - job: Approve_Terraform_plan
+        displayName: Approve Terraform Plan
+        dependsOn: Plan
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              notifyUsers: ${{ variables.notifyUsers }}
+              onTimeout: reject
+              instructions: 'Please validate the Terraform plan'
+            timeoutInMinutes: 5
+
+      - deployment: Deploy
+        dependsOn: Approve_Terraform_plan
+        environment: ${{ variables.environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: none
+                - template: aws/terraform/apply.yml@templates
+                  parameters:
+                    artifactName: ${{ variables.artifactName }}
+                    serviceConnectionName: ${{ variables.serviceConnectionName }}
