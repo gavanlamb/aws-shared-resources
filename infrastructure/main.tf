@@ -18,7 +18,5 @@ resource "aws_instance" "shared" {
   availability_zone = var.availability_zone
   disable_api_termination = true
   
-  tags = {
-    environment = local.tags
-  }
+  tags = local.tags
 }
