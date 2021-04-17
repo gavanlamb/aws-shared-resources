@@ -1,1 +1,1 @@
-# aws-shared-resources
+# AWS Shared Resources

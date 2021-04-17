@@ -59,7 +59,7 @@ stages:
               instructions: 'Please validate the Terraform plan'
             timeoutInMinutes: 5
 
-      - deployment: Deploy
+      - deployment: Apply
         dependsOn: Approve_Terraform_plan
         environment: ${{ variables.environment }}
         strategy:
