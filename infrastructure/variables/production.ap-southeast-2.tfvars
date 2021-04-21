@@ -1,7 +1,7 @@
 region = "ap-southeast-2"
 environment="production"
 
-ami="ami-0d2f34c92aa48cd95"
+ami="ami-0a43280cfb87ffdba"
 instance_type="r5d.2xlarge"
 availability_zone="ap-southeast-2a"
 
