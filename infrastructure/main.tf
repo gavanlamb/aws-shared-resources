@@ -29,7 +29,7 @@ resource "aws_instance" "host" {
 resource "aws_volume_attachment" "host" {
   device_name = "/dev/sdh"
   instance_id = aws_instance.host.id
-  volume_id = aws_ebs_volume.host_volume.id
+  volume_id = aws_ebs_volume.host.id
 }
 
 resource "aws_ebs_volume" "host" {
