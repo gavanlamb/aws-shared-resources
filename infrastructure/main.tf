@@ -47,7 +47,7 @@ resource "aws_ebs_volume" "host" {
   type = "gp3"
   throughput = 300
   tags = local.tags
-  encrypted = true
+  encrypted = false
 }
 
 
