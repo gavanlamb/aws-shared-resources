@@ -52,7 +52,7 @@ resource "aws_ebs_volume" "host" {
   throughput = 300
   tags = local.tags
   encrypted = true
-  kms_key_id = aws_key_pair.gavanlamb.id
+  kms_key_id = aws_key_pair.gavanlamb.arn
   lifecycle {
     prevent_destroy = true
   }
