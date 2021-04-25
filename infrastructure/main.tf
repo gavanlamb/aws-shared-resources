@@ -20,7 +20,7 @@ resource "aws_instance" "host" {
   availability_zone = var.availability_zone
   disable_api_termination = true
 
-  hibernation = falsePEDPE
+  hibernation = false
 
   ebs_optimized = true
 
