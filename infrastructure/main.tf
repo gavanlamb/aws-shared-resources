@@ -18,7 +18,7 @@ resource "aws_instance" "host" {
 
   instance_type = var.instance_type
   availability_zone = var.availability_zone
-  disable_api_termination = true
+  disable_api_termination = false
 
   hibernation = false
 
