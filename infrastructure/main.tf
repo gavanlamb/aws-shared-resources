@@ -18,7 +18,7 @@ resource "aws_instance" "host" {
 
   instance_type = var.instance_type
   availability_zone = var.availability_zone
-  disable_api_termination = false
+  disable_api_termination = true
 
   hibernation = false
 
@@ -29,13 +29,23 @@ resource "aws_instance" "host" {
   key_name = aws_key_pair.gavanlamb.key_name
 
   associate_public_ip_address = true
-
-  ephemeral_block_device {
-    device_name = "/dev/nvme0n1"
-    virtual_name = "ephemeral0"
-    no_device = false
+  root_block_device {
+    volume_size = "20"
+    volume_type = "standard"
   }
-
+  ephemeral_block_device {
+    device_name = "/dev/sdb"
+    virtual_name = "ephemeral0"
+  }
+//  ebs_block_device {
+//    device_name = "/dev/sdh"
+//    delete_on_termination = false
+//    iops = 6000
+//    encrypted = true
+//    kms_key_id = aws_key_pair.gavanlamb.arn
+//    volume_size = 300
+//    volume_type = "gp3"
+//  }
   tags = local.tags
 }
 
@@ -57,7 +67,10 @@ resource "aws_ebs_volume" "host" {
     prevent_destroy = true
   }
 }
-
+resource "aws_ebs_snapshot" "host" {
+  volume_id = aws_volume_attachment.host.volume_id
+  tags = local.tags
+}
 //resource "aws_eip" "host" {
 //  vpc = ""
 //  instance = aws_instance.host.id
