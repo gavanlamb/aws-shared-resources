@@ -20,7 +20,7 @@ resource "aws_instance" "host" {
   availability_zone = var.availability_zone
   disable_api_termination = true
 
-  hibernation = false
+  hibernation = falsePEDPE
 
   ebs_optimized = true
 
@@ -28,9 +28,13 @@ resource "aws_instance" "host" {
 
   key_name = aws_key_pair.gavanlamb.key_name
 
-//  security_groups = [
-//
-//  ]
+  associate_public_ip_address = true
+
+  ephemeral_block_device {
+    device_name = "/dev/nvme0n1"
+    virtual_name = "ephemeral0"
+    no_device = false
+  }
 
   tags = local.tags
 }
@@ -47,11 +51,34 @@ resource "aws_ebs_volume" "host" {
   type = "gp3"
   throughput = 300
   tags = local.tags
-  encrypted = false
+  encrypted = true
+  kms_key_id = aws_key_pair.gavanlamb.id
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
+//resource "aws_eip" "host" {
+//  vpc = ""
+//  instance = aws_instance.host.id
+//}
+//resource "aws_eip_association" "host" {
+//  
+//}
+//
+//resource "aws_ep" "h" {
+//  
+//}
+//
+////
+//resource "aws_vpc" "host" {
+//  cidr_block = ""
+//}
+//resource "aws_subnet" "host" {
+//  cidr_block = ""
+//  vpc_id = aws_vpc.host.id
+//}
 
-//KMS
 
 //Public subnet
 
